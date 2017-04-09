@@ -15,21 +15,26 @@
 	http://www.springframework.org/schema/aop/spring-aop.xsd
 	http://www.springframework.org/schema/cache
 	http://www.springframework.org/schema/cache/spring-cache.xsd"
-	default-lazy-init="false">
+	default-lazy-init="true">
+	
+	<!-- 扫描包 -->
+	<context:component-scan base-package="com.nongziguanli.dao,com.nongziguanli.serviceImpl" />
 	
 	<!-- druid连接池 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-		<property name="driver">com.mysql.jdbc.Driver</property>
-		<property name="url">jdbc:mysql://localhost:3306/myfishdb?charactorEncoding=utf-8</property>
-		<property name="username">root</property>
-		<property name="password">123456</property>
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/myfishdb?charactorEncoding=utf-8"/>
+		<property name="username" value="root"/>
+		<property name="password" value="123456"/>
 	</bean>
 	
 	<!-- sessionFactory -->
 	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"/>
 		<!-- mapping文件 -->
-		<property name="mapperLocations" value="classpath:com/nongziguanli/maping/*.xml"></property>
+		<property name="mapperLocations" value="classpath:sqlMapper/*.xml"/>
+		<!-- mybatis配置 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
 	</bean>
 	
 	<!-- dao接口所在包 -->
@@ -38,4 +43,9 @@
 		<property name="sqlSessionFactory" ref="sessionFactory"/>
 	</bean>
 	
+	<!-- 事务管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 </beans>
